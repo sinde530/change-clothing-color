@@ -1,35 +1,62 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useRef } from 'react';
+import './App.css';
+import T1Image from './assets/top/sweetshirts.webp';
+// import T1Image from './assets/top/polo shirt.webp';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [color, setColor] = useState('#FFFFFF');
+  const canvasRef = useRef(null);
+
+  const handleColorChange = (e: any) => {
+    setColor(e.target.value);
+  };
+
+  const handleDownload = () => {
+    const canvas: any = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+
+    const img = new Image();
+    img.src = T1Image;
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.drawImage(img, 0, 0);
+
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.fillStyle = color;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.globalCompositeOperation = 'destination-atop';
+      ctx.drawImage(img, 0, 0);
+
+      ctx.globalCompositeOperation = 'source-over';
+
+      const link = document.createElement('a');
+      link.download = 'image.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
+  };
 
   return (
-    <>
+    <div className="App">
+      <div className="image-container">
+        <img src={T1Image} alt="Pants" className="clothing-image" />
+        <div className="color-overlay" style={{ backgroundColor: color }} />
+      </div>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <label>
+          Choose Color:
+          <input type="color" onChange={handleColorChange} value={color} />
+        </label>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      <button onClick={handleDownload}>Download Image</button>
+      <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
+    </div>
+  );
 }
 
-export default App
+export default App;
