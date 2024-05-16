@@ -36,7 +36,6 @@
   mix-blend-mode: multiply;
   pointer-events: none;
   opacity: 1;
-  border: 1px solid red;
   /* mask-image: url('./assets/top/sweetshirts.webp'); */
   mask-size: 100%;
 }
